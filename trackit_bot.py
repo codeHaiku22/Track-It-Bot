@@ -28,7 +28,7 @@ def log_in(url, user, passwd):
     except Exception as e:
         print(e)
         print("Error encountered while logging in.")
-        close_and_quit()   
+        close_and_quit()
 
 def find_work_order(workOder):
     try:
@@ -38,7 +38,7 @@ def find_work_order(workOder):
     except Exception as e:
         print(e)
         print("Error encountered while finding work order.")
-        close_and_quit()          
+        close_and_quit()
 
 def get_status():
     try:
@@ -48,7 +48,7 @@ def get_status():
         workOrderStatus = driver.find_element_by_id("wo-status-"+workOrder+"-inputEl")
         workOrderStatus_value = workOrderStatus.get_attribute('value')
         workOrderSummary = driver.find_element_by_id("wo-summary-"+workOrder+"-inputEl")
-        workOrderSummary_value = workOrderSummary.get_attribute('value')        
+        workOrderSummary_value = workOrderSummary.get_attribute('value')
         status = workOrderStatus_value.strip()
         print("\n")
         print("[ Track-It! ]     WO#: "+workOrderId_value)
@@ -58,10 +58,10 @@ def get_status():
     except Exception as e:
         print(e)
         print("Error encountered while retrieving work order status.")
-        close_and_quit()          
+        close_and_quit()
 
 def add_note(note):
-    try:        
+    try:
         note = "[ Track-It! Bot ]: "+note
         workOrderNote = WebDriverWait(driver, 5).until(expcond.presence_of_element_located((By.ID,"wo-note-text-"+workOrder+"-inputEl")))
         workOrderNote.send_keys(note)
@@ -70,17 +70,17 @@ def add_note(note):
     except Exception as e:
         print(e)
         print("Error encountered while adding note.") 
-        close_and_quit()          
+        close_and_quit()
 
-def close_work_order():        
+def close_work_order():
     try:
         closeWorkOrder = WebDriverWait(driver, 5).until(expcond.presence_of_element_located((By.ID,"wo-toggle-status-tb-button-"+workOrder+"-btnInnerEl")))
-        closeWorkOrder.click()   
-        time.sleep(2) 
+        closeWorkOrder.click()
+        time.sleep(2)
     except Exception as e:
         print(e)
         print("Error encountered while closing work order.")
-        close_and_quit()     
+        close_and_quit()
 
 def save_work_order():
     try:
@@ -89,15 +89,15 @@ def save_work_order():
     except Exception as e:
         print(e)
         print("Error encountered while saving work order.")
-        close_and_quit()         
+        close_and_quit()
 
-def log_out():        
+def log_out():
     try:
         logOut = driver.find_element_by_id("ti-log-out-btnIconEl")
         logOut.click()
     except Exception as e:
         print(e)
-        print("Error encountered while logging out.") 
+        print("Error encountered while logging out.")
         close_and_quit()
 
 def close_and_quit():
@@ -105,7 +105,7 @@ def close_and_quit():
         driver.close()
         driver.quit()
         "\n###############################################################"
-        quit()             
+        quit()
 
 #--[Actions]------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -133,9 +133,10 @@ status = get_status()
 
 #~~~[Take Actions]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if (status == "closed"):
-    print("Work Order has a status of closed.")
+    print("\nWork Order has a status of closed.")
+    time.sleep(7)
     log_out()
-    close_and_quit()    
+    close_and_quit()
 
 actionsAC = "x"
 
