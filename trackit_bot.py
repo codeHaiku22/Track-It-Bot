@@ -69,7 +69,7 @@ def add_note(note):
         addNote.click()
     except Exception as e:
         print(e)
-        print("Error encountered while adding note.") 
+        print("Error encountered while adding note.")
         close_and_quit()
 
 def close_work_order():
@@ -110,9 +110,12 @@ def close_and_quit():
 #--[Actions]------------------------------------------------------------------------------------------------------------------------------------------
 
 #~~~[Log In]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""
+For GitHub
 url = "http:\\\\<YourTrackItServer>\\TrackItWeb" 
 user = "YourUserName"
 passwd = "YourPassword"
+"""
 
 print("\n###################### Track-It! Bot 1.0 ######################")
 log_in(url, user, passwd)
@@ -149,12 +152,12 @@ while not(actionsAC == "a" or actionsAC == "c" or actionsAC == ""):
         contactEPV = ""
         note = "Work order request fulfilled.  Requestor/affected party has been notified via"
         while not(contactEPV == "e" or contactEPV == "p" or contactEPV == "v"):
-            contactEPV = input("\nSelect WO closing contact method [e/p/v]:\ne) email\np) phone\nv) voicemail\n").lower() 
+            contactEPV = input("\nSelect WO closing contact method [e/p/v]:\ne) email\np) phone\nv) voicemail\n").lower()
             if (contactEPV == "e"):
                 note = note+" email."
             elif (contactEPV == "p"):
                 note = note+" phone."
-            else: 
+            else:
                 note = note+" voicemail."
         add_note(note)
         close_work_order()
@@ -170,6 +173,7 @@ while not(saveYN == "y" or saveYN == "n" or saveYN == ""):
 if saveWO:
     save_work_order()
     get_status()
+    time.sleep(7)
 
 log_out()
 close_and_quit()
