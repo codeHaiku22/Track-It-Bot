@@ -33,8 +33,21 @@ def log_in(url, user, passwd):
 def find_work_order(workOder):
     try:
         workOrderId = WebDriverWait(driver, 5).until(expcond.presence_of_element_located((By.ID,"wo-browse-go-to-work-order-trigger-inputEl")))
+        workOrderId.send_keys(Keys.CONTROL, "A")
+        workOrderId.send_keys(Keys.DELETE)
         workOrderId.send_keys(workOrder)
         workOrderId.send_keys(Keys.ENTER)
+        workOrderId = WebDriverWait(driver, 5).until(expcond.presence_of_element_located((By.ID,"wo-id-"+workOrder+"-inputEl")))
+        return True
+    except TimeoutException:
+        msgBoxTitle = driver.find_element_by_id("messagebox-1001_header_hd-textEl")
+        msgBoxContent = driver.find_element_by_id("messagebox-1001-displayfield-inputEl")
+        msgBoxOK = driver.find_element_by_id("button-1005-btnIconEl")
+        print("\n")
+        #print("[ Track-It! ] "+msgBoxTitle.text)
+        print("[ Track-It! ] "+msgBoxContent.text)
+        msgBoxOK.click()
+        return False
     except Exception as e:
         print(e)
         print("Error encountered while finding work order.")
@@ -91,6 +104,15 @@ def save_work_order():
         print("Error encountered while saving work order.")
         close_and_quit()
 
+def close_work_order_tab():
+    try:
+        close_tab = driver.find_element_by_id("tab-wo-edit-"+workOrder+"-closeEl")
+        close_tab.click()
+    except Exception as e:
+        print(e)
+        print("Error encountered while closing work order tab.")
+        close_and_quit()
+
 def log_out():
     try:
         logOut = driver.find_element_by_id("ti-log-out-btnIconEl")
@@ -110,70 +132,78 @@ def close_and_quit():
 #--[Actions]------------------------------------------------------------------------------------------------------------------------------------------
 
 #~~~[Log In]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-"""
-For GitHub
 url = "http:\\\\<YourTrackItServer>\\TrackItWeb" 
 user = "YourUserName"
 passwd = "YourPassword"
-"""
 
-print("\n###################### Track-It! Bot 1.0 ######################")
+print("\n###################### Track-It! Bot 1.1 ######################")
 log_in(url, user, passwd)
 
-#~~~[Find Work Order]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-workOrder = 0
-confirmYN = "n"
+repeat = True
 
-while not(confirmYN == "y" or confirmYN == ""):
-    workOrder = input("\nEnter WO#: ")
-    confirmYN = input("Confirm WO# "+workOrder+" [Y/n]: ").lower()
-    workOrder = workOrder.strip()
+while (repeat == True):
+    #~~~[Find Work Order]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    workOrder = 0
+    confirmYN = "n"
 
-find_work_order(workOrder)
+    while not(confirmYN == "y" or confirmYN == ""):
+        workOrder = input("\nEnter WO#: ")
+        confirmYN = input("Confirm WO# "+workOrder+" [Y/n]: ").lower()
+        workOrder = workOrder.strip()
 
-#~~~[Return Status]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-status = get_status()
+    if not(find_work_order(workOrder)):
+        continue
 
-#~~~[Take Actions]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if (status == "closed"):
-    print("\nWork Order has a status of closed.")
-    time.sleep(7)
-    log_out()
-    close_and_quit()
+    #~~~[Return Status]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    status = get_status()
 
-actionsAC = "x"
+    #~~~[Take Actions]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    if (status == "closed"):
+        print("\nWork Order has a status of closed.")
+        close_work_order_tab()
+        continue
 
-while not(actionsAC == "a" or actionsAC == "c" or actionsAC == ""):
-    actionsAC = input("\nDo you wish to add a note or close the work order? [a/C]:").lower()
-    if (actionsAC == "a"):
-        note = input("\nEnter text for note:")
-        add_note(note)
-    elif (actionsAC == "c" or actionsAC == ""):
-        contactEPV = ""
-        note = "Work order request fulfilled.  Requestor/affected party has been notified via"
-        while not(contactEPV == "e" or contactEPV == "p" or contactEPV == "v"):
-            contactEPV = input("\nSelect WO closing contact method [e/p/v]:\ne) email\np) phone\nv) voicemail\n").lower()
-            if (contactEPV == "e"):
-                note = note+" email."
-            elif (contactEPV == "p"):
-                note = note+" phone."
-            else:
-                note = note+" voicemail."
-        add_note(note)
-        close_work_order()
+    actionsAC = "x"
 
-#~~~[Confirm and Save]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-saveYN = "x"
-saveWO = False
+    while not(actionsAC == "a" or actionsAC == "c" or actionsAC == ""):
+        actionsAC = input("\nDo you wish to add a note or close the work order? [a/C]:").lower()
+        if (actionsAC == "a"):
+            note = input("\nEnter text for note:")
+            add_note(note)
+        elif (actionsAC == "c" or actionsAC == ""):
+            contactEPV = ""
+            note = "Work order request fulfilled.  Requestor/affected party has been notified via"
+            while not(contactEPV == "e" or contactEPV == "p" or contactEPV == "v"):
+                contactEPV = input("\nSelect WO closing contact method [e/p/v]:\ne) email\np) phone\nv) voicemail\n").lower()
+                if (contactEPV == "e"):
+                    note = note+" email."
+                elif (contactEPV == "p"):
+                    note = note+" phone."
+                else:
+                    note = note+" voicemail."
+            add_note(note)
+            close_work_order()
 
-while not(saveYN == "y" or saveYN == "n" or saveYN == ""):
-    saveYN = input("\nSave changes to work order? [Y/n]:").lower()
-    saveWO = (saveYN == "y" or saveYN == "")
+    #~~~[Confirm and Save]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    saveYN = "x"
+    saveWO = False
 
-if saveWO:
-    save_work_order()
-    get_status()
-    time.sleep(7)
+    while not(saveYN == "y" or saveYN == "n" or saveYN == ""):
+        saveYN = input("\nSave changes to work order? [Y/n]:").lower()
+        saveWO = (saveYN == "y" or saveYN == "")
+
+    if saveWO:
+        save_work_order()
+        get_status()
+
+    close_work_order_tab()
+
+    #~~~[Loop?]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    loop = input("\nUpdate another work order? [Y/n]").lower()
+
+    if not(loop == "y" or loop == ""):
+        repeat = False
 
 log_out()
+time.sleep(3)
 close_and_quit()
