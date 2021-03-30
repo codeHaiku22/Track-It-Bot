@@ -150,16 +150,9 @@ def log_out():
 #--[Actions]------------------------------------------------------------------------------------------------------------------------------------------
 
 #~~~[Log In]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-"""
-For GitHub
 url = "http:\\\\<YourTrackItServer>\\TrackItWeb" 
 user = "YourUserName"
 passwd = "YourPassword"
-"""
-
-url = "http:\\\\sjcvmtkitapp1\\TrackItWeb"
-user = "dgrewal"
-passwd = "isdtkitdeep"
 
 print("\n###################### "+myNameIs+" ######################")
 log_in(url, user, passwd)
