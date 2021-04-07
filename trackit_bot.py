@@ -7,11 +7,12 @@ from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
-myNameIs = "Track-It! Bot 1.2"
+myNameIs = "Track-It! Bot 1.3"
 
 ffoptions = webdriver.FirefoxOptions()
 ffoptions.headless = True
 driver = webdriver.Firefox(options=ffoptions)
+waitSeconds = 10
 
 def log_in(url, user, passwd):
     try:
@@ -34,12 +35,12 @@ def log_in(url, user, passwd):
 
 def find_work_order(workOder):
     try:
-        workOrderId = WebDriverWait(driver, 5).until(expcond.presence_of_element_located((By.ID,"wo-browse-go-to-work-order-trigger-inputEl")))
+        workOrderId = WebDriverWait(driver, waitSeconds).until(expcond.presence_of_element_located((By.ID,"wo-browse-go-to-work-order-trigger-inputEl")))
         workOrderId.send_keys(Keys.CONTROL, "A")
         workOrderId.send_keys(Keys.DELETE)
         workOrderId.send_keys(workOrder)
         workOrderId.send_keys(Keys.ENTER)
-        workOrderId = WebDriverWait(driver, 5).until(expcond.presence_of_element_located((By.ID,"wo-id-"+workOrder+"-inputEl")))
+        workOrderId = WebDriverWait(driver, waitSeconds).until(expcond.presence_of_element_located((By.ID,"wo-id-"+workOrder+"-inputEl")))
         return True
     except TimeoutException:
         msgBoxTitle = driver.find_element_by_id("messagebox-1001_header_hd-textEl")
@@ -57,7 +58,7 @@ def find_work_order(workOder):
 
 def get_status():
     try:
-        workOrderId = WebDriverWait(driver, 5).until(expcond.presence_of_element_located((By.ID,"wo-id-"+workOrder+"-inputEl")))
+        workOrderId = WebDriverWait(driver, waitSeconds).until(expcond.presence_of_element_located((By.ID,"wo-id-"+workOrder+"-inputEl")))
         workOrderId_value = workOrderId.get_attribute('value')
         time.sleep(2)  #required otherwise finalStatusvalue is blank
         #workOrderOpenDate = driver.find_element_by_id("datefield-1507-inputEl")
@@ -93,7 +94,7 @@ def get_status():
 def add_note(note):
     try:
         note = "[ Track-It! Bot ]: "+note
-        workOrderNote = WebDriverWait(driver, 5).until(expcond.presence_of_element_located((By.ID,"wo-note-text-"+workOrder+"-inputEl")))
+        workOrderNote = WebDriverWait(driver, waitSeconds).until(expcond.presence_of_element_located((By.ID,"wo-note-text-"+workOrder+"-inputEl")))
         workOrderNote.send_keys(note)
         addNote = driver.find_element_by_id("wo-note-add-"+workOrder+"-btnIconEl")
         addNote.click()
@@ -104,7 +105,7 @@ def add_note(note):
 
 def close_work_order():
     try:
-        closeWorkOrder = WebDriverWait(driver, 5).until(expcond.presence_of_element_located((By.ID,"wo-toggle-status-tb-button-"+workOrder+"-btnInnerEl")))
+        closeWorkOrder = WebDriverWait(driver, waitSeconds).until(expcond.presence_of_element_located((By.ID,"wo-toggle-status-tb-button-"+workOrder+"-btnInnerEl")))
         closeWorkOrder.click()
         time.sleep(2)
     except Exception as e:
