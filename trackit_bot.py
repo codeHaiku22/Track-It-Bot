@@ -8,7 +8,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 
-myNameIs = "Track-It! Bot 1.4"
+myNameIs = "Track-It! Bot 1.5"
 
 ffoptions = webdriver.FirefoxOptions()
 ffoptions.headless = True
@@ -28,9 +28,14 @@ def log_in(url, user, passwd):
         login.click()
         time.sleep(2)
         workOrderId = driver.find_element_by_id("wo-browse-go-to-work-order-trigger-inputEl")
-    except NoSuchElementException:
-        closeOtherLogIn = WebDriverWait(driver, waitSeconds).until(expcond.presence_of_element_located((By.ID,"button-1006-btnIconEl")))
-        closeOtherLogIn.click()
+    except NoSuchElementException: #Still at login screen
+        loginStatusMessage = driver.find_element_by_id("login-status")
+        if (loginStatusMessage.text.strip() == ''):
+            closeOtherLogIn = WebDriverWait(driver, waitSeconds).until(expcond.presence_of_element_located((By.ID,"button-1006-btnIconEl")))
+            closeOtherLogIn.click()
+        else:
+            print(loginStatusMessage.text)
+            log_out(False)
     except Exception as e:
         print(e)
         print("Error encountered while logging in.")
@@ -158,22 +163,21 @@ def close_work_order_tab():
         print("Error encountered while closing work order tab.")
         log_out()
 
-def log_out():
+def log_out(loggedIn = True):
     try:
-        logOut = driver.find_element_by_id("ti-log-out-btnIconEl")
-        logOut.click()
-        time.sleep(2)
+        if (loggedIn):
+            logOut = driver.find_element_by_id("ti-log-out-btnIconEl")
+            logOut.click()
+            time.sleep(2)
+    except Exception as e:
+        print(e)
+        print("Error encountered while logging out.")
+    finally:
         print("\nExiting now.")
         print("\n###############################################################")
         driver.close()
         driver.quit()
         quit()        
-    except Exception as e:
-        print(e)
-        print("Error encountered while logging out.")
-        driver.close()
-        driver.quit()
-        quit() 
 
 #---[Actions]-----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -268,6 +272,7 @@ while (repeatMainMenu == True):
 
         #~~~[Find Another Work Order?]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         updateAnotherWO = input("\nUpdate another work order? [Y/n]: ").lower()
-
+        
         if not(updateAnotherWO == "y" or updateAnotherWO == ""):
+            if (updateAnotherWO == "q"): log_out()
             repeatFindWorkOrder = False
